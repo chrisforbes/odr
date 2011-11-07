@@ -28,8 +28,10 @@ class FormattingHandler(xml.sax.ContentHandler):
         tr = textwrap.TextWrapper()
         tr.initial_indent = indent
         tr.subsequent_indent = re.sub('.', ' ', indent);
-        for l in tr.wrap(self.content):
+        lines = tr.wrap(self.content)
+        for l in lines:
             print l
+        print ''
         self.content = ''
 
     def startElement(self,name,attr):
