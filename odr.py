@@ -3,6 +3,8 @@
 import zipfile
 import sys
 import xml.sax
+import textwrap
+import re
 
 class FormattingHandler(xml.sax.ContentHandler):
     def __init__(self):
@@ -20,7 +22,11 @@ class FormattingHandler(xml.sax.ContentHandler):
                 indent += ' * '
             t = s;
         if len(self.content):
-            print u"%s%s" % (indent,self.content)
+            tr = textwrap.TextWrapper()
+            tr.initial_indent = indent
+            tr.subsequent_indent = re.sub('.', ' ', indent);
+            for l in tr.wrap(self.content):
+                print l
             self.content = ''
 
     def startElement(self,name,attr):
@@ -44,11 +50,16 @@ class FormattingHandler(xml.sax.ContentHandler):
             print self.stats
 
 def main():
+    if len(sys.argv) < 2:
+        print "usage: odr <file> [--debug]"
+        return 1
+
     src = sys.argv[1]
     print "loading %s" % (src)
     zf = zipfile.ZipFile(src)
     content = zf.read('content.xml')
     xml.sax.parseString(content, FormattingHandler())
+    return 0
 
 if __name__ == '__main__':
-    main()
+    sys.exit(main())
