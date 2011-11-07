@@ -13,6 +13,9 @@ class FormattingHandler(xml.sax.ContentHandler):
         self.stats = {}
 
     def emit_queued_content(self):
+        if not len(self.content):
+            return
+
         indent = ''
         t = None
         for s in self.styles:
@@ -21,13 +24,13 @@ class FormattingHandler(xml.sax.ContentHandler):
             if s == u'text:list-item':
                 indent += ' * '
             t = s;
-        if len(self.content):
-            tr = textwrap.TextWrapper()
-            tr.initial_indent = indent
-            tr.subsequent_indent = re.sub('.', ' ', indent);
-            for l in tr.wrap(self.content):
-                print l
-            self.content = ''
+
+        tr = textwrap.TextWrapper()
+        tr.initial_indent = indent
+        tr.subsequent_indent = re.sub('.', ' ', indent);
+        for l in tr.wrap(self.content):
+            print l
+        self.content = ''
 
     def startElement(self,name,attr):
         if name == u'text:span': return
