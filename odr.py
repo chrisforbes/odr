@@ -6,21 +6,34 @@ import xml.sax
 import textwrap
 import re
 
+class Sequence(object):   # todo: different sequence numbering methods, etc
+    def __init__(self): self.curval = 0
+    def nextval(self, fmt):
+        self.curval += 1
+        if fmt == 'A':
+            return '%s.' % (chr(ord('A') + self.curval - 1))    # after Z?
+        elif fmt == '1':
+            return '%s.' % (self.curval)
+        else:
+            return '??'     # at least roman numerals are specified in ODF,
+                            # but i haven't needed that yet.
+
 class FormattingHandler(xml.sax.ContentHandler):
     def __init__(self):
         self.content = ''
         self.styles = []
         self.stats = {}
+        self.seqs = {}
 
         self.inline_ignore_elems = [
             u'text:a',
             u'text:span',
             u'text:soft-page-break',
-            u'text:sequence',
             ]
         self.inline_elems = [
             u'text:s',
             u'text:tab',
+            u'text:sequence',
             ]
 
     def emit_queued_content(self):
@@ -59,6 +72,14 @@ class FormattingHandler(xml.sax.ContentHandler):
         if name == u'text:s':
             num_spaces = int(attr.get('text:c','1'))
             self.content += ' ' * num_spaces
+            return
+
+        if name == u'text:sequence':
+            seq_name = attr.get('text:name','')
+            if seq_name not in self.seqs:
+                self.seqs[seq_name] = Sequence()
+            self.content += self.seqs[seq_name].nextval(
+                attr.get('style:num-format','1'))
             return
 
         self.emit_queued_content()

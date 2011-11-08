@@ -14,7 +14,7 @@ If you're hacking on odr, it might be useful to use --debug, to dump the element
 
 There are various things that could be improved:
 
-* Sequence handling is bogus. I implement <text:sequence> as a noop, but it would be easy enough to support sequence variables, and do the right thing here [emit the curval and bump it].
+* Sequence handling only covers the very basics. odr handles only simple numeric and alpha sequences. Alpha overflow past Z is not handled. Roman numerals are not handled. text:formula is totally ignored, we just bump.
 
 * The text wrapping is totally bogus for unicode. We should really be using unicode character properties to determine how much space things use.
 
