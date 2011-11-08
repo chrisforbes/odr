@@ -33,6 +33,8 @@ class FormattingHandler(xml.sax.ContentHandler):
                 indent += ' '
             if s == u'text:list-item':
                 indent += ' * '
+            if s == u'text:h':
+                self.content = '\33[1m\33[4m' + self.content + '\33[0m'
             t = s;
 
         tr = textwrap.TextWrapper()
