@@ -36,6 +36,11 @@ class FormattingHandler(xml.sax.ContentHandler):
 
     def startElement(self,name,attr):
         if name == u'text:span': return
+        if name == u'text:s':
+            num_spaces = int(attr.get('text:c','1'))
+            self.content += ' ' * num_spaces
+            return
+
         self.emit_queued_content()
 
         # establish new style TODO TODO TODO
@@ -44,6 +49,7 @@ class FormattingHandler(xml.sax.ContentHandler):
 
     def endElement(self,name):
         if name == u'text:span': return
+        if name == u'text:s': return
         self.emit_queued_content()
         self.styles.pop()
 
