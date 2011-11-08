@@ -90,10 +90,10 @@ def main():
     src = sys.argv[1]
     try:
         zf = zipfile.ZipFile(src)
-        content = zf.read('content.xml')
-        xml.sax.parseString(content, FormattingHandler())
-    except IOError:   # broken pipe
-        return 0
+        contentStream = zf.open('content.xml')
+        xml.sax.parse(contentStream, FormattingHandler())
+    except IOError: pass            # broken pipe, from exiting the pager
+    except KeyboardInterrupt: pass  # ^C
     return 0
 
 if __name__ == '__main__':
