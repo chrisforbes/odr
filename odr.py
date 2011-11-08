@@ -35,7 +35,15 @@ class FormattingHandler(xml.sax.ContentHandler):
         self.content = ''
 
     def startElement(self,name,attr):
+        if '--xml' in sys.argv:
+            self.content += '<%s>' % name
+
+        if name == u'text:a': return
         if name == u'text:span': return
+        if name == u'text:soft-page-break': return
+        if name == u'text:tab':
+            self.content += '\t'
+            return
         if name == u'text:s':
             num_spaces = int(attr.get('text:c','1'))
             self.content += ' ' * num_spaces
@@ -47,8 +55,14 @@ class FormattingHandler(xml.sax.ContentHandler):
         self.stats[name] = self.stats.get(name,0) + 1
 
     def endElement(self,name):
+        if '--xml' in sys.argv:
+            self.content += '</%s>' % name
+
         if name == u'text:span': return
         if name == u'text:s': return
+        if name == u'text:a': return
+        if name == u'text:tab': return
+        if name == u'text:soft-page-break': return
         self.emit_queued_content()
         self.styles.pop()
 
@@ -61,11 +75,10 @@ class FormattingHandler(xml.sax.ContentHandler):
 
 def main():
     if len(sys.argv) < 2:
-        print "usage: odr <file> [--debug]"
+        print "usage: odr <file> [--debug] [--xml]"
         return 1
 
     src = sys.argv[1]
-    print "loading %s" % (src)
     try:
         zf = zipfile.ZipFile(src)
         content = zf.read('content.xml')
