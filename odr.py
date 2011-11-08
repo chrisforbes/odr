@@ -27,7 +27,7 @@ class FormattingHandler(xml.sax.ContentHandler):
 
         tr = textwrap.TextWrapper()
         tr.initial_indent = indent
-        tr.subsequent_indent = re.sub('.', ' ', indent);
+        tr.subsequent_indent = ' ' * len(indent)
         lines = tr.wrap(self.content)
         for l in lines:
             print l
@@ -43,7 +43,6 @@ class FormattingHandler(xml.sax.ContentHandler):
 
         self.emit_queued_content()
 
-        # establish new style TODO TODO TODO
         self.styles.append(name)
         self.stats[name] = self.stats.get(name,0) + 1
 
