@@ -16,6 +16,7 @@ class FormattingHandler(xml.sax.ContentHandler):
             u'text:a',
             u'text:span',
             u'text:soft-page-break',
+            u'text:sequence',
             ]
         self.inline_elems = [
             u'text:s',
