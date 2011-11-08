@@ -1,0 +1,33 @@
+odr is a lightweight viewer for Open Document Format files. It's wildly hackish, and very incomplete, but it does a reasonable job of the 80% or so that actually matters.
+
+I symlink ~/bin/odr to odr.py and invoke it like this:
+
+  $ export PYTHONIOENCODING=utf8
+  ...
+  $ odr some-file.odt | less -R
+
+odr emits ANSI escapes for bold and underline [for headings], and one day might emit some colors too.
+
+It works best when used with `less` like this -- although you need -R to enable interpretation of the escapes, and then since less isn't a TTY, python fails to determine that your terminal can do UTF8, so you need to force PYTHONIOENCODING, yay..
+
+If you're hacking on odr, it might be useful to use --debug, to dump the element frequencies after the content; also --xml to include the xml elements directly in the (still somewhat-formatted) output. Note that --xml does alter layout by making some otherwise empty spans nonempty, etc.
+
+There are various things that could be improved:
+
+* Sequence handling is bogus. I implement <text:sequence> as a noop, but it would be easy enough to support sequence variables, and do the right thing here [emit the curval and bump it].
+
+* The text wrapping is totally bogus for unicode. We should really be using unicode character properties to determine how much space things use.
+
+* Text wrapping also doesn't interact well with escapes-- they should be treated as both (a) indivisible, and (b) zero-width.
+
+* Maybe we should have an option to suppress the use of ANSI escapes.
+
+* Anything we don't understand is treated as a "block-level" element.
+
+* Tables are a pain. They don't behave like block-level elements, and they also don't behave like inline elements, and automatic column width is always just going to be a disaster. Nothing impossible here for someone sufficiently motivated (currently not me).
+
+* It's possible to try WAY harder to get reasonable formatting in the console. We can do colors, italic, bold, underline, and other bletcherous things if someone cares about that.
+
+Have fun, and please send me patches for things that suck so much that you've fixed them. ;)
+
+-- Chris
