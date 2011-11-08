@@ -14,7 +14,7 @@ If you're hacking on odr, it might be useful to use --debug, to dump the element
 
 There are various things that could be improved:
 
-* Sequence handling only covers the very basics. odr handles only simple numeric and alpha sequences. Alpha overflow past Z is not handled. Roman numerals are not handled. text:formula is totally ignored, we just bump.
+* Sequence handling only covers the very basics. odr handles only simple numeric alpha, and roman sequences. Alpha overflow past z/Z is not handled. text:formula is totally ignored, we just bump.
 
 * The text wrapping is totally bogus for unicode. We should really be using unicode character properties to determine how much space things use.
 

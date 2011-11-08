@@ -6,17 +6,33 @@ import xml.sax
 import textwrap
 import re
 
-class Sequence(object):   # todo: different sequence numbering methods, etc
+def roman(x):
+    nums = [(1000,'m'), (900,'cm'), (500,'d'), (400,'cd'), (100,'c'),
+            (90,'xc'), (50,'l'), (40,'xl'), (10,'x'), (9,'ix'), (5,'v'),
+            (4,'iv'), (1,'i')]
+    val = ''
+    for n,v in nums:
+        while x >= n:
+            val += v
+            x -= n
+    return val
+
+class Sequence(object):   # todo: text:formula support
     def __init__(self): self.curval = 0
     def nextval(self, fmt):
         self.curval += 1
         if fmt == 'A':
-            return '%s.' % (chr(ord('A') + self.curval - 1))    # after Z?
+            return '%s' % (chr(ord('A') + self.curval - 1))    # after Z?
+        if fmt == 'a':
+            return '%s' % (chr(ord('a') + self.curval - 1))    # ditto
         elif fmt == '1':
-            return '%s.' % (self.curval)
+            return '%s' % (self.curval)
+        elif fmt == 'I':
+            return roman(self.curval).upper()
+        elif fmt == 'i':
+            return roman(self.curval)
         else:
-            return '??'     # at least roman numerals are specified in ODF,
-                            # but i haven't needed that yet.
+            return ''   # unknown formats shown as nothing
 
 class FormattingHandler(xml.sax.ContentHandler):
     def __init__(self):
@@ -79,7 +95,7 @@ class FormattingHandler(xml.sax.ContentHandler):
             if seq_name not in self.seqs:
                 self.seqs[seq_name] = Sequence()
             self.content += self.seqs[seq_name].nextval(
-                attr.get('style:num-format','1'))
+                attr.get('style:num-format',''))
             return
 
         self.emit_queued_content()
