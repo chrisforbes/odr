@@ -12,6 +12,16 @@ class FormattingHandler(xml.sax.ContentHandler):
         self.styles = []
         self.stats = {}
 
+        self.inline_ignore_elems = [
+            u'text:a',
+            u'text:span',
+            u'text:soft-page-break',
+            ]
+        self.inline_elems = [
+            u'text:s',
+            u'text:tab',
+            ]
+
     def emit_queued_content(self):
         if not len(self.content):
             return
@@ -38,9 +48,8 @@ class FormattingHandler(xml.sax.ContentHandler):
         if '--xml' in sys.argv:
             self.content += '<%s>' % name
 
-        if name == u'text:a': return
-        if name == u'text:span': return
-        if name == u'text:soft-page-break': return
+        if name in self.inline_ignore_elems: return
+
         if name == u'text:tab':
             self.content += '\t'
             return
@@ -58,11 +67,8 @@ class FormattingHandler(xml.sax.ContentHandler):
         if '--xml' in sys.argv:
             self.content += '</%s>' % name
 
-        if name == u'text:span': return
-        if name == u'text:s': return
-        if name == u'text:a': return
-        if name == u'text:tab': return
-        if name == u'text:soft-page-break': return
+        if name in self.inline_elems or \
+            name in self.inline_ignore_elems: return
         self.emit_queued_content()
         self.styles.pop()
 
